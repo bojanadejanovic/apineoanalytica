@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{F098B0D4-26B4-455E-8347-B1E708E900FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoAnalytica.Application", "NeoAnalytica.Application\NeoAnalytica.Application.csproj", "{0CD6CAEE-7383-4491-AB45-8B44EA16180F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoAnalytica.AppCore", "NeoAnalytica.AppCore\NeoAnalytica.AppCore.csproj", "{0C146154-AD4D-4A1B-A1F4-625C3A0D4B2F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{E58EF3AE-3E5B-4A61-A681-7B609804C3E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoAnalytica.Infrastructure", "NeoAnalytica.Infrastructure\NeoAnalytica.Infrastructure.csproj", "{20A923B1-C287-4AEC-A6D7-B7D415CA1513}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoAnalytica.API", "NeoAnalytica.API\NeoAnalytica.API.csproj", "{3B260167-8511-4601-A000-CF5F37D8D586}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Database", "Database\Database.sqlproj", "{B39AC5EE-AA00-4D98-8230-8112AD22919F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0CD6CAEE-7383-4491-AB45-8B44EA16180F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CD6CAEE-7383-4491-AB45-8B44EA16180F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CD6CAEE-7383-4491-AB45-8B44EA16180F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CD6CAEE-7383-4491-AB45-8B44EA16180F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C146154-AD4D-4A1B-A1F4-625C3A0D4B2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C146154-AD4D-4A1B-A1F4-625C3A0D4B2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C146154-AD4D-4A1B-A1F4-625C3A0D4B2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C146154-AD4D-4A1B-A1F4-625C3A0D4B2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20A923B1-C287-4AEC-A6D7-B7D415CA1513}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20A923B1-C287-4AEC-A6D7-B7D415CA1513}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20A923B1-C287-4AEC-A6D7-B7D415CA1513}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20A923B1-C287-4AEC-A6D7-B7D415CA1513}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B260167-8511-4601-A000-CF5F37D8D586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B260167-8511-4601-A000-CF5F37D8D586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B260167-8511-4601-A000-CF5F37D8D586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B260167-8511-4601-A000-CF5F37D8D586}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B39AC5EE-AA00-4D98-8230-8112AD22919F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B39AC5EE-AA00-4D98-8230-8112AD22919F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B39AC5EE-AA00-4D98-8230-8112AD22919F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B39AC5EE-AA00-4D98-8230-8112AD22919F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B39AC5EE-AA00-4D98-8230-8112AD22919F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B39AC5EE-AA00-4D98-8230-8112AD22919F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0CD6CAEE-7383-4491-AB45-8B44EA16180F} = {F098B0D4-26B4-455E-8347-B1E708E900FA}
+		{0C146154-AD4D-4A1B-A1F4-625C3A0D4B2F} = {F098B0D4-26B4-455E-8347-B1E708E900FA}
+		{20A923B1-C287-4AEC-A6D7-B7D415CA1513} = {E58EF3AE-3E5B-4A61-A681-7B609804C3E4}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DA112426-810A-4A2B-8F5C-DE27FD9E2775}
+	EndGlobalSection
+EndGlobal
