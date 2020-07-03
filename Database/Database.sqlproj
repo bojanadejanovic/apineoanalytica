@@ -67,6 +67,6 @@
     <Build Include="Tables\QuestionType.sql" />
     <Build Include="Tables\QuestionOption.sql" />
     <Build Include="Tables\Survey.sql" />
-    <Build Include="Tables\SurveySection.sql" />
+    <Build Include="Tables\SurveyParticipant.sql" />
   </ItemGroup>
 </Project>
