@@ -56,14 +56,15 @@ namespace NeoAnalytica.Infrastructure
             }
         }
 
-        public async Task<ApplicationUser> GetUserAsync(string username)
+        public async Task<UserModel> GetUserAsync(string username)
         {
             using (var conn = GetOpenConnection())
             {
                 var sql = "SELECT * FROM ApplicationUser WHERE UserName = @username";
                 var parameters = new DynamicParameters();
                 parameters.Add("@username", username, System.Data.DbType.String);
-                return await conn.QueryFirstOrDefaultAsync<ApplicationUser>(sql, parameters);
+                var user = await conn.QueryFirstOrDefaultAsync<ApplicationUser>(sql, parameters);
+                return new UserModel() { Email = user.Email, LastLoggedIn = user.LastLoggedIn, UserId = user.Id, UserName = user.UserName };
             }
         }
 
@@ -81,11 +82,11 @@ namespace NeoAnalytica.Infrastructure
             }
         }
 
-        public override async Task UpdateAsync(ApplicationUser entityToUpdate)
+        public  async Task UpdateAsync(UserModel entityToUpdate)
         {
             using (var conn = GetOpenConnection())
             {
-                var existingEntity = await FindAsync(entityToUpdate.Id);
+                var existingEntity = await FindAsync(entityToUpdate.UserId);
 
                 var sql = "UPDATE ApplicationUser "
                     + "SET ";
@@ -106,7 +107,7 @@ namespace NeoAnalytica.Infrastructure
                 sql = sql.TrimEnd(',');
 
                 sql += " WHERE Id=@Id";
-                parameters.Add("@Id", entityToUpdate.Id, DbType.Int32);
+                parameters.Add("@Id", entityToUpdate.UserId, DbType.Int32);
 
                 await conn.QueryAsync(sql, parameters);
             }
@@ -131,6 +132,11 @@ namespace NeoAnalytica.Infrastructure
                 user.LastLoggedIn = DateTime.UtcNow;
                 await UpdateAsync(user);
             }
+        }
+
+        public override Task UpdateAsync(ApplicationUser entityToUpdate)
+        {
+            throw new NotImplementedException();
         }
     }
 }

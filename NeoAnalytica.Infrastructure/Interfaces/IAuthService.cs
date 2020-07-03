@@ -10,7 +10,7 @@ namespace NeoAnalytica.Infrastructure
     public interface IAuthService : IGenericRepository<ApplicationUser>
     {
         Task<bool> UserExists(string username);
-        Task<ApplicationUser> GetUserAsync(string username);
+        Task<UserModel> GetUserAsync(string username);
 
         Task UpdateLoginInfo(string user);
     }
