@@ -68,7 +68,7 @@ namespace NeoAnalytica.Infrastructure
                 {
                     return new UserModel() { Email = user.Email, LastLoggedIn = user.LastLoggedIn, UserId = user.Id, UserName = user.UserName };
                 }
-                return new UserModel() { };
+                return null;
             }
         }
 
