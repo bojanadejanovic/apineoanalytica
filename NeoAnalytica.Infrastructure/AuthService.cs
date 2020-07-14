@@ -64,7 +64,11 @@ namespace NeoAnalytica.Infrastructure
                 var parameters = new DynamicParameters();
                 parameters.Add("@username", username, System.Data.DbType.String);
                 var user = await conn.QueryFirstOrDefaultAsync<ApplicationUser>(sql, parameters);
-                return new UserModel() { Email = user.Email, LastLoggedIn = user.LastLoggedIn, UserId = user.Id, UserName = user.UserName };
+                if(user != null)
+                {
+                    return new UserModel() { Email = user.Email, LastLoggedIn = user.LastLoggedIn, UserId = user.Id, UserName = user.UserName };
+                }
+                return new UserModel() { };
             }
         }
 
