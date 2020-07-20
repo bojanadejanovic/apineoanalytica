@@ -13,13 +13,13 @@
 
 /* Clean up all the tables */
 
-DELETE FROM [Answer]
-DELETE FROM [Question]
-DELETE FROM [QuestionOption]
-DELETE FROM [QuestionType]
-DELETE FROM [ApplicationRole]
-DELETE FROM [SurveyParticipant]
-DELETE FROM [SurveyCategory]
-DELETE FROM [Survey]
-DELETE FROM [ApplicationUserRole]
-DELETE FROM [ApplicationUser]
+DELETE FROM dbo.[Answer]
+DELETE FROM dbo.[Question]
+DELETE FROM dbo.[QuestionOption]
+DELETE FROM dbo.[QuestionType]
+DELETE FROM dbo.[ApplicationRole]
+DELETE FROM dbo.[SurveyParticipant]
+DELETE FROM dbo.[SurveyCategory]
+DELETE FROM dbo.[Survey]
+DELETE FROM dbo.[ApplicationUserRole]
+DELETE FROM dbo.[ApplicationUser]
