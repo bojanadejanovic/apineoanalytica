@@ -72,17 +72,17 @@ namespace NeoAnalytica.Infrastructure
             }
         }
 
-        public override async Task InsertAsync(ApplicationUser entity)
+        public override async Task<int> InsertAsync(ApplicationUser entity)
         {
             using (var conn = GetOpenConnection())
             {
-                var sql = "INSERT INTO ApplicationUser(UserName, Email, PhoneNumber)" + "VALUES(@UserName, @Email, @PhoneNumber)";
+                var sql = "INSERT INTO ApplicationUser(UserName, Email, PhoneNumber)" + "VALUES(@UserName, @Email, @PhoneNumber); SELECT CAST(SCOPE_IDENTITY() as int";
                 var parameters = new DynamicParameters();
                 parameters.Add("@UserName", entity.UserName, System.Data.DbType.String);
                 parameters.Add("@Email", entity.Email, System.Data.DbType.String);
                 parameters.Add("@PhoneNumber", entity.PhoneNumber, System.Data.DbType.String);
 
-                await conn.QueryAsync(sql, parameters);
+                return await conn.ExecuteScalarAsync<int>(sql, parameters);
             }
         }
 

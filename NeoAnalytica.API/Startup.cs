@@ -55,6 +55,7 @@ namespace NeoAnalytica.API
             });
 
             services.AddTransient<IAuthService>(x => new AuthService(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddTransient<ISurveyService>(x => new SurveyService(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
 
             // Configure Swagger

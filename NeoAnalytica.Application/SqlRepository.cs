@@ -30,7 +30,7 @@ namespace NeoAnalytica.Application
         public abstract Task DeleteAsync(int Id);
         public abstract Task<IEnumerable<TEntity>> GetAllAsync();
         public abstract Task<TEntity> FindAsync(int Id);
-        public abstract Task InsertAsync(TEntity entity);
+        public abstract Task<int> InsertAsync(TEntity entity);
         public abstract Task UpdateAsync(TEntity entityToUpdate);
     }
 }

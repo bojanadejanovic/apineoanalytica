@@ -18,9 +18,9 @@ GO
 ALTER TABLE [dbo].[Survey] CHECK CONSTRAINT [FK_Survey_ApplicationUser_Id]
 GO
 
-ALTER TABLE [dbo].[Survey]  WITH CHECK ADD  CONSTRAINT [FK_Survey_SurveyCategory_SuveyCategoryID] FOREIGN KEY([SurveyCategoryID])
-REFERENCES [dbo].[SurveyCategory] ([SuveyCategoryID])
+ALTER TABLE [dbo].[Survey]  WITH CHECK ADD  CONSTRAINT [FK_Survey_SurveyCategory_SurveyCategoryID] FOREIGN KEY([SurveyCategoryID])
+REFERENCES [dbo].[SurveyCategory] ([SurveyCategoryID])
 GO
 
-ALTER TABLE [dbo].[Survey] CHECK CONSTRAINT [FK_Survey_SurveyCategory_SuveyCategoryID]
+ALTER TABLE [dbo].[Survey] CHECK CONSTRAINT [FK_Survey_SurveyCategory_SurveyCategoryID]
 GO

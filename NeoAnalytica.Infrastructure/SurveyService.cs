@@ -1,0 +1,145 @@
+﻿using Dapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using NeoAnalytica.AppCore.Entities;
+using NeoAnalytica.AppCore.Models;
+using NeoAnalytica.Application;
+using NeoAnalytica.Infrastructure.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace NeoAnalytica.Infrastructure
+{
+    public class SurveyService : SqlRepository<Survey>, ISurveyService
+    {
+        private readonly ILogger<AuthService> _logger;
+
+        public SurveyService(string connectionString) : base(connectionString) { }
+
+        public SurveyService(string connectionString,
+            ILogger<AuthService> logger) : base(connectionString)
+        {
+            _logger = logger;
+        }
+       
+        public override async Task DeleteAsync(int Id)
+        {
+            using (var conn = GetOpenConnection())
+            {
+                var sql = "DELETE FROM ApplicationUser WHERE Id = @Id";
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id", Id, System.Data.DbType.Int32);
+                await conn.QueryFirstOrDefaultAsync<ApplicationUser>(sql, parameters);
+            }
+        }
+
+        public override async Task<Survey> FindAsync(int Id)
+        {
+            using (var conn = GetOpenConnection())
+            {
+                var sql = "SELECT * FROM Survey WHERE SurveyId = @Id";
+                var parameters = new DynamicParameters();
+                parameters.Add("@Id", Id, System.Data.DbType.Int32);
+                return await conn.QueryFirstOrDefaultAsync<Survey>(sql, parameters);
+            }
+        }
+
+        public override async Task<IEnumerable<Survey>> GetAllAsync()
+        {
+            using (var conn = GetOpenConnection())
+            {
+                var sql = "SELECT * FROM Survey";
+                return await conn.QueryAsync<Survey>(sql);
+            }
+        }
+
+        public async Task<IEnumerable<SurveyCategory>> GetAllSurveyCategories()
+        {
+            using (var conn = GetOpenConnection())
+            {
+                var sql = "SELECT SurveyCategoryID, CategoryName, CategoryDescription  FROM SurveyCategory";
+                return await conn.QueryAsync<SurveyCategory>(sql);
+            }
+        }
+
+        public override async Task<int> InsertAsync(Survey entity)
+        {
+            using (var conn = GetOpenConnection())
+            {
+                var sql = "INSERT INTO Survey(Name, Description, UserID, SurveyCategoryID)" + "VALUES(@Name, @Description, @UserID, @SurveyCategoryID); SELECT CAST(SCOPE_IDENTITY() as int)";
+                var parameters = new DynamicParameters();
+                parameters.Add("@Name", entity.Name, System.Data.DbType.String);
+                parameters.Add("@Description", entity.Description, System.Data.DbType.String);
+                parameters.Add("@UserID", entity.UserId, System.Data.DbType.Int32);
+                parameters.Add("@SurveyCategoryID", entity.SurveyCategoryId, System.Data.DbType.Int32);
+
+                var id = await conn.ExecuteScalarAsync<int>(sql, parameters);
+                return id;
+            }
+        }
+
+        public override async Task UpdateAsync(Survey entityToUpdate)
+        {
+            using (var conn = GetOpenConnection())
+            {
+                var existingEntity = await FindAsync(entityToUpdate.UserId);
+
+                var sql = "UPDATE Survey "
+                    + "SET ";
+
+                var parameters = new DynamicParameters();
+                if (existingEntity.Name != entityToUpdate.Name)
+                {
+                    sql += "Name=@Name,";
+                    parameters.Add("@Name", entityToUpdate.Name, DbType.String);
+                }
+
+                if(existingEntity.Description != entityToUpdate.Description)
+                {
+                    sql += "Description=@Description,";
+                    parameters.Add("@Description", entityToUpdate.Description, DbType.String);
+                }
+
+                if (existingEntity.UserId != entityToUpdate.UserId)
+                {
+                    sql += "UserID=@UserID,";
+                    parameters.Add("@UserID", entityToUpdate.UserId, DbType.Int32);
+                }
+
+                if (existingEntity.SurveyCategoryId != entityToUpdate.SurveyCategoryId)
+                {
+                    sql += "SurveyCategoryID=@SurveyCategoryID,";
+                    parameters.Add("@SurveyCategoryID", entityToUpdate.SurveyCategoryId, DbType.Int32);
+                }
+
+                sql = sql.TrimEnd(',');
+
+                sql += " WHERE Id=@Id";
+                parameters.Add("@Id", entityToUpdate.SurveyId, DbType.Int32);
+
+                await conn.QueryAsync(sql, parameters);
+            }
+        }
+
+
+        public async Task<Survey> GetSurveyById(int suveyId)
+        {
+            return await FindAsync(suveyId);
+        }
+
+        public async Task<int> CreateNewSurvey(Survey survey)
+        {
+            return await InsertAsync(survey);
+        }
+
+        public async Task UpdateSurvey(Survey survey)
+        {
+            await UpdateAsync(survey);
+        }
+
+    }
+}
