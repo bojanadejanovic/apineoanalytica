@@ -62,6 +62,7 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Tables" />
+    <Folder Include="Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ApplicationUser.sql" />
@@ -74,5 +75,11 @@
     <Build Include="Tables\Survey.sql" />
     <Build Include="Tables\SurveyParticipant.sql" />
     <Build Include="Tables\SurveyCategory.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Scripts\NeoAnalytica.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PreDeploy Include="Scripts\NeoAnalytica.PreDeployment.sql" />
   </ItemGroup>
 </Project>
