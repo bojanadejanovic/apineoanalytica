@@ -1,11 +1,10 @@
 ﻿CREATE TABLE [dbo].[SurveyParticipant](
-	[SurveyParticipantId] [int] IDENTITY(1,1) NOT NULL,
+	[SurveyParticipantID] [int] IDENTITY(1,1) NOT NULL,
 	[LastActiveDate] [datetime] NULL,
-	[Email][nvarchar](100) NULL
+	[Email] [nvarchar](250) NULL,
 PRIMARY KEY CLUSTERED 
 (
-	[SurveyParticipantId] ASC
-)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+	[SurveyParticipantID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-
