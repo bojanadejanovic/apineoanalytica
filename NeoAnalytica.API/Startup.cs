@@ -75,6 +75,8 @@ namespace NeoAnalytica.API
                 // Enable full name as schema id
                 genOptions.CustomSchemaIds(x => x.FullName);
             });
+
+            services.AddRouting(options => options.LowercaseUrls = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
