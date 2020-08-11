@@ -7,7 +7,6 @@ namespace NeoAnalytica.Application
 {
     public interface IGenericRepository<TEntity>
     {
-        IDbConnection GetOpenConnection();
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<TEntity> FindAsync(int Id);
         Task<int> InsertAsync(TEntity entity);

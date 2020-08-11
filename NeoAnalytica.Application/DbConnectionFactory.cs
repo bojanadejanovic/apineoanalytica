@@ -6,25 +6,28 @@ using System.Text;
 
 namespace NeoAnalytica.Application
 {
-    public class DbConnectionFactory
+    public class DbConnectionFactory : IDatabaseConnectionFactory
     {
-        public static IDbConnection GetDbConnection(DbConnectionType dbType, string connectionString)
-        {
-            IDbConnection connection = null;
+        private readonly IDictionary<DatabaseConnectionName, string> _connectionDict;
 
-            switch(dbType)
+        public DbConnectionFactory(IDictionary<DatabaseConnectionName, string> connectionDict)
+        {
+            _connectionDict = connectionDict;
+        }
+
+        public IDbConnection GetDbConnection(DatabaseConnectionName connectionName)
+        {
+            string connectionString = null;
+            if (_connectionDict.TryGetValue(connectionName, out connectionString))
             {
-                case DbConnectionType.SQL:
-                    connection = new SqlConnection(connectionString);
-                    break;
-                default:
-                    connection = null;
-                    break;
+                SqlConnection connection =  new SqlConnection(connectionString);
+                connection.Open();
+                return connection;
             }
 
-            connection.Open();
-            return connection;
+            throw new ArgumentNullException();
         }
+
 
         public enum DbConnectionType
         {

@@ -18,17 +18,21 @@ namespace NeoAnalytica.Infrastructure
     {
         private readonly ILogger<AuthService> _logger;
 
-        public SurveyService(string connectionString) : base(connectionString) { }
+        public SurveyService(IDatabaseConnectionFactory dbConnectionFactory)
+           : base(dbConnectionFactory)
+        {
 
-        public SurveyService(string connectionString,
-            ILogger<AuthService> logger) : base(connectionString)
+        }
+
+        public SurveyService(IDatabaseConnectionFactory dbConnectionFactory,
+            ILogger<AuthService> logger) : base(dbConnectionFactory)
         {
             _logger = logger;
         }
        
         public override async Task DeleteAsync(int Id)
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var sql = "DELETE FROM ApplicationUser WHERE Id = @Id";
                 var parameters = new DynamicParameters();
@@ -39,7 +43,7 @@ namespace NeoAnalytica.Infrastructure
 
         public override async Task<Survey> FindAsync(int Id)
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var sql = "SELECT * FROM Survey WHERE SurveyId = @Id";
                 var parameters = new DynamicParameters();
@@ -50,7 +54,7 @@ namespace NeoAnalytica.Infrastructure
 
         public override async Task<IEnumerable<Survey>> GetAllAsync()
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var sql = "SELECT * FROM Survey";
                 return await conn.QueryAsync<Survey>(sql);
@@ -59,7 +63,7 @@ namespace NeoAnalytica.Infrastructure
 
         public async Task<IEnumerable<SurveyCategory>> GetAllSurveyCategories()
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var sql = "SELECT SurveyCategoryID, CategoryName, CategoryDescription  FROM SurveyCategory";
                 return await conn.QueryAsync<SurveyCategory>(sql);
@@ -68,7 +72,7 @@ namespace NeoAnalytica.Infrastructure
 
         public override async Task<int> InsertAsync(Survey entity)
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var sql = "INSERT INTO Survey(Name, Description, UserID, SurveyCategoryID)" + "VALUES(@Name, @Description, @UserID, @SurveyCategoryID); SELECT CAST(SCOPE_IDENTITY() as int)";
                 var parameters = new DynamicParameters();
@@ -84,7 +88,7 @@ namespace NeoAnalytica.Infrastructure
 
         public override async Task UpdateAsync(Survey entityToUpdate)
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var existingEntity = await FindAsync(entityToUpdate.UserId);
 
