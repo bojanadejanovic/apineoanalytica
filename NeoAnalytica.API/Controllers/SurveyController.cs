@@ -52,7 +52,7 @@ namespace NeoAnalytica.API.Controllers
                 return BadRequest("User not found!");
             }
 
-            Survey entity = new Survey() { Name = newSurvey.SurveyName, Description = newSurvey.SurveyDescription, SurveyCategoryId = newSurvey.SurveyCategoryID, UserId = author.UserId };
+            SurveyEntity entity = new SurveyEntity() { Name = newSurvey.SurveyName, Description = newSurvey.SurveyDescription, SurveyCategoryId = newSurvey.SurveyCategoryID, UserId = author.UserId };
             var result = await _surveyService.CreateNewSurvey(entity);
             return new JsonResult(result);
         }
@@ -88,6 +88,22 @@ namespace NeoAnalytica.API.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpPost("question/add")]
+        [ProducesResponseType(200)]
+        [AllowAnonymous]
+        public async Task<IActionResult> AddQuestions([FromBody] QuestionRequest newQuestions)
+        {
+            // TODO: move this to validation
+            var survey = _surveyService.GetSurveyById(newQuestions.SurveyId);
+            if(survey == null)
+            {
+                return BadRequest("Survey not found!");
+            }
+
+            await _surveyService.AddQuestionsToSurvey(newQuestions);
+            return Ok();
         }
 
 

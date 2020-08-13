@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace NeoAnalytica.Infrastructure
 {
-    public class SurveyService : SqlRepository<Survey>, ISurveyService
+    public class SurveyService : SqlRepository<SurveyEntity>, ISurveyService
     {
         private readonly ILogger<AuthService> _logger;
 
@@ -41,36 +41,36 @@ namespace NeoAnalytica.Infrastructure
             }
         }
 
-        public override async Task<Survey> FindAsync(int Id)
+        public override async Task<SurveyEntity> FindAsync(int Id)
         {
             using (var conn = base.DbConnection)
             {
                 var sql = "SELECT * FROM Survey WHERE SurveyId = @Id";
                 var parameters = new DynamicParameters();
                 parameters.Add("@Id", Id, System.Data.DbType.Int32);
-                return await conn.QueryFirstOrDefaultAsync<Survey>(sql, parameters);
+                return await conn.QueryFirstOrDefaultAsync<SurveyEntity>(sql, parameters);
             }
         }
 
-        public override async Task<IEnumerable<Survey>> GetAllAsync()
+        public override async Task<IEnumerable<SurveyEntity>> GetAllAsync()
         {
             using (var conn = base.DbConnection)
             {
                 var sql = "SELECT * FROM Survey";
-                return await conn.QueryAsync<Survey>(sql);
+                return await conn.QueryAsync<SurveyEntity>(sql);
             }
         }
 
-        public async Task<IEnumerable<SurveyCategory>> GetAllSurveyCategories()
+        public async Task<IEnumerable<SurveyCategoryEntity>> GetAllSurveyCategories()
         {
             using (var conn = base.DbConnection)
             {
                 var sql = "SELECT SurveyCategoryID, CategoryName, CategoryDescription  FROM SurveyCategory";
-                return await conn.QueryAsync<SurveyCategory>(sql);
+                return await conn.QueryAsync<SurveyCategoryEntity>(sql);
             }
         }
 
-        public override async Task<int> InsertAsync(Survey entity)
+        public override async Task<int> InsertAsync(SurveyEntity entity)
         {
             using (var conn = base.DbConnection)
             {
@@ -86,7 +86,7 @@ namespace NeoAnalytica.Infrastructure
             }
         }
 
-        public override async Task UpdateAsync(Survey entityToUpdate)
+        public override async Task UpdateAsync(SurveyEntity entityToUpdate)
         {
             using (var conn = base.DbConnection)
             {
@@ -130,20 +130,46 @@ namespace NeoAnalytica.Infrastructure
         }
 
 
-        public async Task<Survey> GetSurveyById(int suveyId)
+        public async Task<SurveyEntity> GetSurveyById(int suveyId)
         {
             return await FindAsync(suveyId);
         }
 
-        public async Task<int> CreateNewSurvey(Survey survey)
+        public async Task<int> CreateNewSurvey(SurveyEntity survey)
         {
             return await InsertAsync(survey);
         }
 
-        public async Task UpdateSurvey(Survey survey)
+        public async Task UpdateSurvey(SurveyEntity survey)
         {
             await UpdateAsync(survey);
         }
 
+        public async Task AddQuestionsToSurvey(QuestionRequest questionRequest)
+        {
+            try
+            {
+                // execute sp
+                using (var conn = base.DbConnection)
+                {
+
+                    foreach (var question in questionRequest.Questions)
+                    {
+                        var parameters = new DynamicParameters();
+                        parameters.Add("@QuestionID", question.Id, System.Data.DbType.Int32);
+                        parameters.Add("@Description", question.Text, System.Data.DbType.String);
+                        parameters.Add("@QuestionТypeID", question.QuestionТypeID, System.Data.DbType.Int32);
+                        parameters.Add("@AnswerOptional", question.AnswerOptional, System.Data.DbType.Boolean);
+                        parameters.Add("@SurveyID", questionRequest.SurveyId, System.Data.DbType.Int32);
+                        await conn.QueryAsync("InsertQuestion", parameters, commandType: CommandType.StoredProcedure);
+                    }
+                }
+            } catch (DatabaseException ex)
+            {
+                _logger.LogError($"Error ocurred while executing AddQuestionsToSurvey: { ex.Message }");
+                throw;
+            }
+
+        }
     }
 }

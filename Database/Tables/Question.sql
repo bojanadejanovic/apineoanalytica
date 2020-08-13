@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[Question](
 	[QuestionID] [int] IDENTITY(1,1) NOT NULL,
 	[QuestionТypeID] [int] NOT NULL,
+	[QuestionText] [nvarchar](500) NULL,
 	[AnswerOptional] [bit] NULL,
 	[SurveyID] [int] NOT NULL,
  CONSTRAINT [PK_Question_QuestionID] PRIMARY KEY CLUSTERED 

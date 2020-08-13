@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace NeoAnalytica.Infrastructure
 {
-    public interface ISurveyService : IGenericRepository<Survey>
+    public interface ISurveyService : IGenericRepository<SurveyEntity>
     {
-        Task<Survey> GetSurveyById(int suveyId);
-        Task<int> CreateNewSurvey(Survey survey);
-        Task UpdateSurvey(Survey survey);
-
-        Task<IEnumerable<SurveyCategory>> GetAllSurveyCategories();
+        Task<SurveyEntity> GetSurveyById(int suveyId);
+        Task<int> CreateNewSurvey(SurveyEntity survey);
+        Task UpdateSurvey(SurveyEntity survey);
+        Task<IEnumerable<SurveyCategoryEntity>> GetAllSurveyCategories();
+        Task AddQuestionsToSurvey(QuestionRequest questionRequest);
     }
 }
