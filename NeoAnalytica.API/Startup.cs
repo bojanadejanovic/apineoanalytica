@@ -33,7 +33,9 @@ namespace NeoAnalytica.API
             services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
             services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
 
-           
+            //allow cors policy - temporary 
+            services.AddCors();
+
             // Add and configure the default identity system that will be used in the application.
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders();
@@ -66,13 +68,7 @@ namespace NeoAnalytica.API
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ISurveyService, SurveyService>();
 
-            //allow cors policy - temporary 
-            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
-            {
-                builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            }));
+           
 
             services.AddControllers();
 
@@ -105,7 +101,7 @@ namespace NeoAnalytica.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("MyPolicy");
+            app.UseCors();
 
             app.UseHttpsRedirection();
 
