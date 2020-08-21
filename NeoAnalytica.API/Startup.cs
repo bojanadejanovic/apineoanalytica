@@ -66,6 +66,14 @@ namespace NeoAnalytica.API
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ISurveyService, SurveyService>();
 
+            //allow cors policy - temporary 
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
+
             services.AddControllers();
 
             // Configure Swagger
@@ -96,6 +104,8 @@ namespace NeoAnalytica.API
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("MyPolicy");
 
             app.UseHttpsRedirection();
 
