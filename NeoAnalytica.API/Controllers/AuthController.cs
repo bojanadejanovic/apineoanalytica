@@ -69,7 +69,7 @@ namespace NeoAnalytica.API.Controllers
 
             if(result.Succeeded)
             {
-                await _authService.UpdateLoginInfo(credentials.Email);
+                await _authService.GetAndUpdateUserLoginInfoAsync(credentials.Email, DateTime.UtcNow);
             }
 
             return this.ToJsonResult(result);

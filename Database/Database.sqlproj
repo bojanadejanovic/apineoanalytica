@@ -63,6 +63,7 @@
     <Folder Include="Properties" />
     <Folder Include="Tables" />
     <Folder Include="Scripts" />
+    <Folder Include="StoredProcedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ApplicationUser.sql" />
@@ -75,6 +76,7 @@
     <Build Include="Tables\Survey.sql" />
     <Build Include="Tables\SurveyParticipant.sql" />
     <Build Include="Tables\SurveyCategory.sql" />
+    <Build Include="StoredProcedures\GetAndUpdateUser.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\NeoAnalytica.PostDeployment.sql" />

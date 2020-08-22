@@ -13,11 +13,11 @@ namespace NeoAnalytica.Infrastructure
     public class AuthService : SqlRepository<ApplicationUser>, IAuthService
     {
         private readonly ILogger<AuthService> _logger;
-        public AuthService(IDatabaseConnectionFactory dbConnectionFactory)
-           : base(dbConnectionFactory)
-        {
+        //public AuthService(IDatabaseConnectionFactory dbConnectionFactory)
+        //   : base(dbConnectionFactory)
+        //{
             
-        }
+        //}
 
         public AuthService(IDatabaseConnectionFactory dbConnectionFactory,
           ILogger<AuthService> logger) : base(dbConnectionFactory)
@@ -121,6 +121,7 @@ namespace NeoAnalytica.Infrastructure
 
         public async Task<bool> UserExists(string username)
         {
+
             var user = await GetUserAsync(username);
             if(user != null)
             {
@@ -130,13 +131,19 @@ namespace NeoAnalytica.Infrastructure
             return false;
         }
 
-        public async Task UpdateLoginInfo(string username)
+
+        public async Task GetAndUpdateUserLoginInfoAsync(string username, DateTime loginTime)
         {
-            var user = await GetUserAsync(username);
-            if(user != null)
+            using (var conn = base.DbConnection)
             {
-                user.LastLoggedIn = DateTime.UtcNow;
-                await UpdateAsync(user);
+                var parameters = new DynamicParameters();
+                parameters.Add("@username", username);
+                parameters.Add("@loginTime", loginTime);
+
+                await conn.QueryAsync(
+                    "dbo.GetAndUpdateUserLoginInfo",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
             }
         }
 
