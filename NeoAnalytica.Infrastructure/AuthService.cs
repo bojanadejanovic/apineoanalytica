@@ -91,6 +91,7 @@ namespace NeoAnalytica.Infrastructure
         {
             using (var conn = base.DbConnection)
             {
+                _logger.LogDebug($"Get user for userId: {entityToUpdate?.UserId}");
                 var existingEntity = await FindAsync(entityToUpdate.UserId);
 
                 var sql = "UPDATE ApplicationUser "
