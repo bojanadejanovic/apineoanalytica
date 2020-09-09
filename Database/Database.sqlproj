@@ -79,9 +79,11 @@
     <Build Include="StoredProcedures\GetAndUpdateUser.sql" />
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="Scripts\NeoAnalytica.PostDeployment.sql" />
+    <None Include="Scripts\NeoAnalytica.PostDeployment.sql" />
+    <PostDeploy Include="Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
-    <PreDeploy Include="Scripts\NeoAnalytica.PreDeployment.sql" />
+    <None Include="Scripts\NeoAnalytica.PreDeployment.sql" />
+    <PreDeploy Include="Script.PreDeployment.sql" />
   </ItemGroup>
 </Project>
