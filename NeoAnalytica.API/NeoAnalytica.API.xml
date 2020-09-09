@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NeoAnalytica.API</name>
+    </assembly>
+    <members>
+        <member name="M:NeoAnalytica.API.ControllerBaseExtensions.ToJsonResult``1(Microsoft.AspNetCore.Mvc.ControllerBase,``0)">
+            <summary>
+            Converts specified result object to <see cref="T:Microsoft.AspNetCore.Mvc.JsonResult"/> used to create an HTTP response.
+            </summary>
+            <typeparam name="T">The type of result to create.</typeparam>
+            <param name="controller">Controller.</param>
+            <param name="result">An instance of the result to return.</param>
+            <returns><see cref="T:Microsoft.AspNetCore.Mvc.JsonResult"/>.</returns>
+        </member>
+        <member name="M:NeoAnalytica.API.Controllers.AuthController.Register(NeoAnalytica.Infrastructure.DTOs.UserCredentials)">
+            <summary>
+            Registers new user
+            </summary>
+            <param name="credentials"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoAnalytica.API.Controllers.AuthController.Login(NeoAnalytica.Infrastructure.DTOs.UserCredentials)">
+            <summary>
+            Authenticates a user with user  credentials
+            </summary>
+            <param name="credentials"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoAnalytica.API.Controllers.SurveyController.CreateNewSurvey(NeoAnalytica.Infrastructure.DTOs.SurveyRequest)">
+            <summary>
+            Creates new survey
+            </summary>
+            <param name="credentials"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoAnalytica.API.Controllers.SurveyController.GetSurvey(System.Int32)">
+            <summary>
+            Retrieves survey entity based on surveyId supplied
+            </summary>
+            <param name="surveyId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NeoAnalytica.API.Controllers.SurveyController.GetAllSurveyCategories">
+            <summary>
+            Retrieves all survey categories
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

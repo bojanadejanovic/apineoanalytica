@@ -88,6 +88,7 @@ namespace NeoAnalytica.API
 
                 // Enable full name as schema id
                 genOptions.CustomSchemaIds(x => x.FullName);
+                genOptions.IncludeXmlComments(xmlPath);
             });
 
             services.AddRouting(options => options.LowercaseUrls = true);
