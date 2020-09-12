@@ -1,21 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using AspNetCore.Identity.Dapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using NeoAnalytica.AppCore.Models;
+using NeoAnalytica.Application;
 using NeoAnalytica.Infrastructure;
 using NeoAnalytica.Infrastructure.Identity;
 
@@ -38,6 +33,9 @@ namespace NeoAnalytica.API
             services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
             services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
 
+            //allow cors policy - temporary 
+            services.AddCors();
+
             // Add and configure the default identity system that will be used in the application.
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders();
@@ -54,8 +52,24 @@ namespace NeoAnalytica.API
                 option.LoginPath = "/api/auth/login";
             });
 
-            services.AddTransient<IAuthService>(x => new AuthService(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddTransient<ISurveyService>(x => new SurveyService(Configuration.GetConnectionString("DefaultConnection")));
+            var connectionDict = new Dictionary<DatabaseConnectionName, string>
+            {
+                { DatabaseConnectionName.DefaultConnection, this.Configuration.GetConnectionString("DefaultConnection") },
+                //{ DatabaseConnectionName.Connection2, this.Configuration.GetConnectionString("dbConnection2") }
+            };
+
+            // Inject this dict
+            services.AddSingleton<IDictionary<DatabaseConnectionName, string>>(connectionDict);
+
+            // Inject the factory
+            services.AddTransient<IDatabaseConnectionFactory, DbConnectionFactory>();
+
+            // Register your regular repositories
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ISurveyService, SurveyService>();
+
+           
+
             services.AddControllers();
 
             // Configure Swagger
@@ -74,6 +88,7 @@ namespace NeoAnalytica.API
 
                 // Enable full name as schema id
                 genOptions.CustomSchemaIds(x => x.FullName);
+                genOptions.IncludeXmlComments(xmlPath);
             });
 
             services.AddRouting(options => options.LowercaseUrls = true);
@@ -90,6 +105,8 @@ namespace NeoAnalytica.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseAuthorization();
 

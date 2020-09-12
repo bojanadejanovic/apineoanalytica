@@ -11,7 +11,6 @@ namespace NeoAnalytica.Infrastructure
     {
         Task<bool> UserExists(string username);
         Task<UserModel> GetUserAsync(string username);
-
-        Task UpdateLoginInfo(string user);
+        Task GetAndUpdateUserLoginInfoAsync(string username, DateTime loginTime);
     }
 }

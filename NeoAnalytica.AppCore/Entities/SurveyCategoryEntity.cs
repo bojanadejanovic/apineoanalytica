@@ -7,7 +7,7 @@ namespace NeoAnalytica.AppCore.Entities
     /// <summary>
     /// Represents Survey Category entity 
     /// </summary>
-    public class SurveyCategory
+    public class SurveyCategoryEntity
     {
         public int SurveyCategoryID { get; set; }
 

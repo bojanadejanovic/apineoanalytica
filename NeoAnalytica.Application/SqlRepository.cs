@@ -13,19 +13,15 @@ namespace NeoAnalytica.Application
     /// <typeparam name="TEntity"></typeparam>
     public abstract class SqlRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
-        private string _connectionString;
-        private DbConnectionType _dbType;
+        public IDbConnection DbConnection { get; private set; }
 
-        public SqlRepository(string connectionString)
+        public SqlRepository(IDatabaseConnectionFactory dbConnectionFactory)
         {
-            _dbType = DbConnectionType.SQL;
-            _connectionString = connectionString;
+            // Now it's the time to pick the right connection string!
+            // Enum is used. No magic string!
+            this.DbConnection = dbConnectionFactory.GetDbConnection(DatabaseConnectionName.DefaultConnection);
         }
 
-        public IDbConnection GetOpenConnection()
-        {
-            return DbConnectionFactory.GetDbConnection(_dbType, _connectionString);
-        }
 
         public abstract Task DeleteAsync(int Id);
         public abstract Task<IEnumerable<TEntity>> GetAllAsync();

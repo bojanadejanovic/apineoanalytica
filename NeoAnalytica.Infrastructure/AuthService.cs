@@ -1,14 +1,11 @@
 ﻿using Dapper;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NeoAnalytica.AppCore.Models;
 using NeoAnalytica.Application;
 using NeoAnalytica.Infrastructure.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NeoAnalytica.Infrastructure
@@ -16,18 +13,22 @@ namespace NeoAnalytica.Infrastructure
     public class AuthService : SqlRepository<ApplicationUser>, IAuthService
     {
         private readonly ILogger<AuthService> _logger;
+        //public AuthService(IDatabaseConnectionFactory dbConnectionFactory)
+        //   : base(dbConnectionFactory)
+        //{
+            
+        //}
 
-        public AuthService(string connectionString) : base(connectionString) { }
-
-        public AuthService(string connectionString,
-            ILogger<AuthService> logger) : base(connectionString)
+        public AuthService(IDatabaseConnectionFactory dbConnectionFactory,
+          ILogger<AuthService> logger) : base(dbConnectionFactory)
         {
             _logger = logger;
         }
-       
+
+
         public override async Task DeleteAsync(int Id)
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var sql = "DELETE FROM ApplicationUser WHERE Id = @Id";
                 var parameters = new DynamicParameters();
@@ -38,7 +39,7 @@ namespace NeoAnalytica.Infrastructure
 
         public override async Task<ApplicationUser> FindAsync(int Id)
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var sql = "SELECT * FROM ApplicationUser WHERE Id = @Id";
                 var parameters = new DynamicParameters();
@@ -49,7 +50,7 @@ namespace NeoAnalytica.Infrastructure
 
         public override async Task<IEnumerable<ApplicationUser>> GetAllAsync()
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var sql = "SELECT * FROM ApplicationUser";
                 return await conn.QueryAsync<ApplicationUser>(sql);
@@ -58,7 +59,7 @@ namespace NeoAnalytica.Infrastructure
 
         public async Task<UserModel> GetUserAsync(string username)
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var sql = "SELECT * FROM ApplicationUser WHERE UserName = @username";
                 var parameters = new DynamicParameters();
@@ -74,7 +75,7 @@ namespace NeoAnalytica.Infrastructure
 
         public override async Task<int> InsertAsync(ApplicationUser entity)
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
                 var sql = "INSERT INTO ApplicationUser(UserName, Email, PhoneNumber)" + "VALUES(@UserName, @Email, @PhoneNumber); SELECT CAST(SCOPE_IDENTITY() as int";
                 var parameters = new DynamicParameters();
@@ -88,8 +89,9 @@ namespace NeoAnalytica.Infrastructure
 
         public  async Task UpdateAsync(UserModel entityToUpdate)
         {
-            using (var conn = GetOpenConnection())
+            using (var conn = base.DbConnection)
             {
+                _logger.LogDebug($"Get user for userId: {entityToUpdate?.UserId}");
                 var existingEntity = await FindAsync(entityToUpdate.UserId);
 
                 var sql = "UPDATE ApplicationUser "
@@ -119,6 +121,7 @@ namespace NeoAnalytica.Infrastructure
 
         public async Task<bool> UserExists(string username)
         {
+
             var user = await GetUserAsync(username);
             if(user != null)
             {
@@ -128,13 +131,19 @@ namespace NeoAnalytica.Infrastructure
             return false;
         }
 
-        public async Task UpdateLoginInfo(string username)
+
+        public async Task GetAndUpdateUserLoginInfoAsync(string username, DateTime loginTime)
         {
-            var user = await GetUserAsync(username);
-            if(user != null)
+            using (var conn = base.DbConnection)
             {
-                user.LastLoggedIn = DateTime.UtcNow;
-                await UpdateAsync(user);
+                var parameters = new DynamicParameters();
+                parameters.Add("@username", username);
+                parameters.Add("@loginTime", loginTime);
+
+                await conn.QueryAsync(
+                    "dbo.GetAndUpdateUserLoginInfo",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
             }
         }
 
