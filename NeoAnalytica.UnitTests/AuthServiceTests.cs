@@ -27,7 +27,7 @@ namespace NeoAnalytica.UnitTests
             var db = new InMemoryDatabase();
             db.Insert(users);
             connectionFactoryMock.Setup(c => c.GetDbConnection(DatabaseConnectionName.DefaultConnection)).Returns(db.OpenConnection());
-            var result = await new AuthService(connectionFactoryMock.Object, null).GetAllAsync();
+            var result = await new AuthService(connectionFactoryMock.Object, null, null).GetAllAsync();
 
             Assert.Equal(users.Count, result.Count());
 

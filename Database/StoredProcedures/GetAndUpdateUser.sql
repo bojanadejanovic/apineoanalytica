@@ -1,10 +1,10 @@
 ﻿CREATE PROCEDURE [dbo].[GetAndUpdateUserLoginInfo]
 	@username nvarchar(200),
-	@loginTime datetime
+	@loginTime datetime,
+	@userId int out
 AS
-	DECLARE @UserID int
-	SET @UserID = (SELECT Id  FROM [dbo].ApplicationUser WHERE Email = @username)
+	SET @userId = (SELECT Id  FROM [dbo].ApplicationUser WHERE Email = @username)
 
-	UPDATE dbo.ApplicationUser SET LastLoggedIn = @loginTime WHERE Id = @UserID
+	UPDATE dbo.ApplicationUser SET LastLoggedIn = @loginTime WHERE Id = @userId
 
 RETURN 0

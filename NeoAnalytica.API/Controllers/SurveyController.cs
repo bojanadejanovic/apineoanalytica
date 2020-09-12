@@ -15,6 +15,7 @@ using NeoAnalytica.Infrastructure.DTOs;
 
 namespace NeoAnalytica.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SurveyController : ControllerBase
@@ -38,7 +39,6 @@ namespace NeoAnalytica.API.Controllers
         /// <returns></returns>
         [HttpPost("create")]
         [ProducesResponseType(200)]
-        [AllowAnonymous]
         public async Task<IActionResult> CreateNewSurvey([FromBody] SurveyRequest newSurvey)
         {
             // TODO: move this to validation
@@ -79,6 +79,7 @@ namespace NeoAnalytica.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("categories/all")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllSurveyCategories()
         {
             var categories = await _surveyService.GetAllSurveyCategories();
@@ -92,7 +93,6 @@ namespace NeoAnalytica.API.Controllers
 
         [HttpPost("question/add")]
         [ProducesResponseType(200)]
-        [AllowAnonymous]
         public async Task<IActionResult> AddQuestions([FromBody] QuestionRequest newQuestions)
         {
             // TODO: move this to validation
