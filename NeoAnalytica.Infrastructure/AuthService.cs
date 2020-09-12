@@ -1,11 +1,16 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using NeoAnalytica.AppCore.Models;
 using NeoAnalytica.Application;
 using NeoAnalytica.Infrastructure.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace NeoAnalytica.Infrastructure
@@ -13,16 +18,14 @@ namespace NeoAnalytica.Infrastructure
     public class AuthService : SqlRepository<ApplicationUser>, IAuthService
     {
         private readonly ILogger<AuthService> _logger;
-        //public AuthService(IDatabaseConnectionFactory dbConnectionFactory)
-        //   : base(dbConnectionFactory)
-        //{
-            
-        //}
+        private readonly TokenManagement _tokenManagement;
 
         public AuthService(IDatabaseConnectionFactory dbConnectionFactory,
-          ILogger<AuthService> logger) : base(dbConnectionFactory)
+          ILogger<AuthService> logger,
+          IOptions<TokenManagement> tokenManagement) : base(dbConnectionFactory)
         {
             _logger = logger;
+            _tokenManagement = tokenManagement.Value;
         }
 
 
@@ -132,19 +135,53 @@ namespace NeoAnalytica.Infrastructure
         }
 
 
-        public async Task GetAndUpdateUserLoginInfoAsync(string username, DateTime loginTime)
+        public async Task<int> GetAndUpdateUserLoginInfoAsync(string username, DateTime loginTime)
         {
+            int userId = 0;
             using (var conn = base.DbConnection)
             {
                 var parameters = new DynamicParameters();
                 parameters.Add("@username", username);
                 parameters.Add("@loginTime", loginTime);
+                parameters.Add("@userId", userId, DbType.Int32, ParameterDirection.Output);
 
-                await conn.QueryAsync(
+                 await conn.QueryAsync<int>(
                     "dbo.GetAndUpdateUserLoginInfo",
                     parameters,
                     commandType: CommandType.StoredProcedure);
+                userId = parameters.Get<int>("@userId");
             }
+
+            return userId;
+        }
+
+        public string CreateToken(UserCredentials user)
+        {
+            string token = string.Empty;
+
+            var claim = new[] {
+                new Claim (ClaimTypes.Name, user.Email),
+                new Claim (ClaimTypes.NameIdentifier, user.UserId.ToString ())
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenManagement.Secret));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claim),
+                Expires = System.DateTime.Now.AddMinutes(_tokenManagement.AccessExpiration),
+                SigningCredentials = credentials,
+                IssuedAt = DateTime.UtcNow,
+                //Audience = _tokenManagement.Audience,
+                //Issuer = _tokenManagement.Issuer
+
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var createToken = tokenHandler.CreateToken(tokenDescriptor);
+            token = tokenHandler.WriteToken(createToken);
+            return token;
         }
 
         public override Task UpdateAsync(ApplicationUser entityToUpdate)

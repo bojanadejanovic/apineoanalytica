@@ -67,9 +67,18 @@ namespace NeoAnalytica.API.Controllers
         {
             var result = await _signInManager.PasswordSignInAsync(credentials.Email, credentials.Password, false, false);
 
+            if (result == null)
+                return Unauthorized();
+
             if(result.Succeeded)
             {
-                await _authService.GetAndUpdateUserLoginInfoAsync(credentials.Email, DateTime.UtcNow);
+                credentials.UserId = await _authService.GetAndUpdateUserLoginInfoAsync(credentials.Email, DateTime.UtcNow);
+                string token = _authService.CreateToken(credentials);
+                return Ok(new
+                {
+                    Email = credentials.Email,
+                    Token = token
+                });
             }
 
             return this.ToJsonResult(result);
