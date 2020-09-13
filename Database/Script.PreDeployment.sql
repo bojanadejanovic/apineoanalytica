@@ -9,4 +9,5 @@
                SELECT * FROM [$(TableName)]					
 --------------------------------------------------------------------------------------
 */
+DELETE FROM dbo.Survey
 DELETE FROM dbo.SurveyCategory
