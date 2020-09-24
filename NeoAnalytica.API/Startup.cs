@@ -28,6 +28,8 @@ namespace NeoAnalytica.API
 
         public IConfiguration Configuration { get; }
 
+        readonly string allowReactpApp = "_allowReactApp";
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -37,7 +39,14 @@ namespace NeoAnalytica.API
             services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
 
             //allow cors policy - temporary 
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: allowReactpApp,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("https://neoanalytica-test.azurewebsites.net");
+                                  });
+            });
 
             // Add and configure the default identity system that will be used in the application.
             services.AddIdentity<ApplicationUser, ApplicationRole>()
