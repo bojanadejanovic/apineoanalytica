@@ -70,7 +70,7 @@ namespace NeoAnalytica.API.Controllers
             if (result == null)
                 return Unauthorized();
 
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 credentials.UserId = await _authService.GetAndUpdateUserLoginInfoAsync(credentials.Email, DateTime.UtcNow);
                 string token = _authService.CreateToken(credentials);
@@ -80,8 +80,11 @@ namespace NeoAnalytica.API.Controllers
                     Token = token
                 });
             }
+            else
+            {
+                return Unauthorized();
+            }
 
-            return this.ToJsonResult(result);
         }
 
 
@@ -98,4 +101,5 @@ namespace NeoAnalytica.API.Controllers
             
         }
     }
+
 }
