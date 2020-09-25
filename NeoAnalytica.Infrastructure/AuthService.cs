@@ -155,13 +155,13 @@ namespace NeoAnalytica.Infrastructure
             return userId;
         }
 
-        public string CreateToken(UserCredentials user)
+        public string CreateToken(UserCredentials user, int userId)
         {
             string token = string.Empty;
 
             var claim = new[] {
                 new Claim (ClaimTypes.Name, user.Email),
-                new Claim (ClaimTypes.NameIdentifier, user.UserId.ToString ())
+                new Claim (ClaimTypes.NameIdentifier, userId.ToString ())
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenManagement.Secret));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);

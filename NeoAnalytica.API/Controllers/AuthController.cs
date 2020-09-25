@@ -72,8 +72,8 @@ namespace NeoAnalytica.API.Controllers
 
             if (result.Succeeded)
             {
-                credentials.UserId = await _authService.GetAndUpdateUserLoginInfoAsync(credentials.Email, DateTime.UtcNow);
-                string token = _authService.CreateToken(credentials);
+                var userId = await _authService.GetAndUpdateUserLoginInfoAsync(credentials.Email, DateTime.UtcNow);
+                string token = _authService.CreateToken(credentials, userId);
                 return Ok(new
                 {
                     Email = credentials.Email,
