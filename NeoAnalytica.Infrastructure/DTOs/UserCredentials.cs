@@ -19,7 +19,5 @@ namespace NeoAnalytica.Infrastructure.DTOs
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-        public int UserId { get; set; }
-
     }
 }
