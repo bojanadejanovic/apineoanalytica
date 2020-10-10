@@ -113,12 +113,12 @@ namespace NeoAnalytica.API
                 };
             });
 
-            services.AddAuthentication().AddFacebook(options =>
-            {
-                options.AppId = Configuration["Authentication:Facebook:AppId"];
-                options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-                options.AccessDeniedPath = "/AccessDeniedPathInfo";
-            });
+            //services.AddAuthentication().AddFacebook(options =>
+            //{
+            //    options.AppId = Configuration["Authentication:Facebook:AppId"];
+            //    options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            //    options.AccessDeniedPath = "/AccessDeniedPathInfo";
+            //});
 
             services.AddControllers();
 
