@@ -16,6 +16,7 @@ using NeoAnalytica.AppCore.Models;
 using NeoAnalytica.Application;
 using NeoAnalytica.Infrastructure;
 using NeoAnalytica.Infrastructure.Identity;
+using NeoAnalytica.Infrastructure.Interfaces;
 
 namespace NeoAnalytica.API
 {
@@ -57,6 +58,7 @@ namespace NeoAnalytica.API
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 10;
                 options.Password.RequireNonAlphanumeric = true;
+                options.SignIn.RequireConfirmedEmail = true;
             });
 
             services.ConfigureApplicationCookie(option =>
@@ -85,6 +87,11 @@ namespace NeoAnalytica.API
             var token = Configuration.GetSection("tokenManagement").Get<TokenManagement>();
             var secret = Encoding.ASCII.GetBytes(token.Secret);
 
+            var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailSettings>();
+            services.AddSingleton(emailConfig);
+
+            services.AddScoped<IEmailService, EmailService>();
+
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -106,6 +113,12 @@ namespace NeoAnalytica.API
                 };
             });
 
+            services.AddAuthentication().AddFacebook(options =>
+            {
+                options.AppId = Configuration["Authentication:Facebook:AppId"];
+                options.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                options.AccessDeniedPath = "/AccessDeniedPathInfo";
+            });
 
             services.AddControllers();
 

@@ -77,6 +77,7 @@
     <Build Include="Tables\SurveyParticipant.sql" />
     <Build Include="Tables\SurveyCategory.sql" />
     <Build Include="StoredProcedures\GetAndUpdateUser.sql" />
+    <Build Include="Tables\AspNetUserLogins.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\NeoAnalytica.PostDeployment.sql" />

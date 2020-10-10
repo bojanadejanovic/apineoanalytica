@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using NeoAnalytica.AppCore.Models;
 using NeoAnalytica.Infrastructure;
 using NeoAnalytica.Infrastructure.DTOs;
+using NeoAnalytica.Infrastructure.Interfaces;
 
 namespace NeoAnalytica.API.Controllers
 {
@@ -22,14 +23,17 @@ namespace NeoAnalytica.API.Controllers
         private IAuthService _authService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private IEmailService _emailService;
         public AuthController(
             IAuthService authService,
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IEmailService emailService)
         {
             _authService = authService;
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -52,6 +56,13 @@ namespace NeoAnalytica.API.Controllers
 
             var user = new ApplicationUser { UserName = credentials.Email, Email = credentials.Email };
             var result = await _userManager.CreateAsync(user, credentials.Password);
+            if(result.Succeeded)
+            {
+                var emailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Auth", new { token = emailToken, email = user.Email }, Request.Scheme);
+                string content = $"To confirm your registration please click on the following link {confirmationLink}";
+                await _emailService.SendEmail(new Message(new List<string> { credentials.Email }, "Welcome to NeoAnalytica", content, null));
+            }
             return new JsonResult(result);
         }
 
@@ -85,6 +96,18 @@ namespace NeoAnalytica.API.Controllers
                 return Unauthorized();
             }
 
+        }
+
+        [HttpGet]
+        public async Task<string> ConfirmEmail(string token, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return "Error";
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if(result.Succeeded)
+                return $"Thank you for confirming email";
+            return result.Errors.FirstOrDefault().Code.ToString();
         }
 
 
