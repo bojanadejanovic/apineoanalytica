@@ -184,10 +184,5 @@ namespace NeoAnalytica.Infrastructure
             }
 
         }
-
-        public Task<IEnumerable<SurveyEntity>> GetAllSurveys()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
