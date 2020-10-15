@@ -33,6 +33,20 @@ namespace NeoAnalytica.API.Controllers
         }
 
         /// <summary>
+        /// Retrieves all surveys
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<SurveyEntity>), StatusCodes.Status200OK)]
+        public async Task<IEnumerable<SurveyEntity>> GetAllReports()
+        {
+            var page = new Pager(1, 20);
+            var ret = await _surveyService.GetAllSurveys(page);
+            return ret;
+        }
+
+        /// <summary>
         /// Creates new survey
         /// </summary>
         /// <param name="credentials"></param>
