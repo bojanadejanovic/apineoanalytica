@@ -60,6 +60,19 @@ namespace NeoAnalytica.Infrastructure
                 return await conn.QueryAsync<SurveyEntity>(sql);
             }
         }
+        
+        public async Task<IEnumerable<SurveyEntity>> GetAllSurveys(Pager pager)
+        {
+            using (var conn = base.DbConnection)
+            {
+                var sql = (@"select * from [dbo].[Survey]
+                      order by [SurveyID]
+                      OFFSET      @Offset ROWS 
+                      FETCH NEXT  @Next   ROWS ONLY");;
+                var results =  await conn.QueryAsync<SurveyEntity>(sql, pager);
+                return results;
+            }
+        }
 
         public async Task<IEnumerable<SurveyEntity>> GetAllSurveys(Pager pager, int UserId)
         {
