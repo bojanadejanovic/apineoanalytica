@@ -111,7 +111,7 @@ namespace NeoAnalytica.API.Controllers
         }
 
 
-        [HttpGet("[action]/{username}")]
+        [HttpGet("{username}")]
         public async Task<IActionResult> GetUser(string username)
         {
             var user = await _authService.GetUserAsync(username);

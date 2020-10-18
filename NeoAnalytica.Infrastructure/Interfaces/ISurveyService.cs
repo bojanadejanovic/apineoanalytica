@@ -12,9 +12,11 @@ namespace NeoAnalytica.Infrastructure
     public interface ISurveyService : IGenericRepository<SurveyEntity>
     {
         Task<SurveyEntity> GetSurveyById(int suveyId);
-        Task<int> CreateNewSurvey(SurveyEntity survey);
+
+        Task<SurveyEntity> InsertSurveyAsync(SurveyEntity entity);
         Task UpdateSurvey(SurveyEntity survey);
         Task<IEnumerable<SurveyCategoryEntity>> GetAllSurveyCategories();
         Task AddQuestionsToSurvey(QuestionRequest questionRequest);
+        Task<IEnumerable<SurveyEntity>> GetAllSurveys(Pager pager, int UserId);
     }
 }

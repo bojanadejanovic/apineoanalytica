@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NeoAnalytica.API.Filters;
 using NeoAnalytica.AppCore.Models;
 using NeoAnalytica.Application;
 using NeoAnalytica.Infrastructure;
@@ -38,6 +39,9 @@ namespace NeoAnalytica.API
 
             services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
             services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
+
+            services.AddHttpContextAccessor();
+
 
             //allow cors policy - temporary 
             services.AddCors(options =>
@@ -120,6 +124,7 @@ namespace NeoAnalytica.API
             //    options.AccessDeniedPath = "/AccessDeniedPathInfo";
             //});
 
+            services.AddScoped<CheckToken>();
             services.AddControllers();
 
             // Configure Swagger
