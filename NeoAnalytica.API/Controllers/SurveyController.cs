@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using NeoAnalytica.API.Filters;
 using NeoAnalytica.AppCore.Entities;
 using NeoAnalytica.AppCore.Models;
 using NeoAnalytica.Infrastructure;
@@ -23,33 +27,39 @@ namespace NeoAnalytica.API.Controllers
 
         private ISurveyService _surveyService;
         private IAuthService _authService;
+        private IHttpContextAccessor _httpContextAccessor;
 
         public SurveyController(
             ISurveyService surveyService,
-            IAuthService authService)
+            IAuthService authService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _surveyService = surveyService;
             _authService = authService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
-        /// Retrieves all surveys
+        /// Retrieves all surveys for authenticated user
         /// </summary>
-        /// <param name="page"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
+        [ServiceFilter(typeof(CheckToken))]
         [ProducesResponseType(typeof(IEnumerable<SurveyEntity>), StatusCodes.Status200OK)]
-        public async Task<IEnumerable<SurveyEntity>> GetAllReports()
+        public async Task<IEnumerable<SurveyEntity>> GetAllSurveys(int pageNumber, int pageSize = 10)
         {
-            var page = new Pager(1, 20);
-            var ret = await _surveyService.GetAllSurveys(page);
+            var page = new Pager(pageNumber, pageSize);
+            var userId = (int)_httpContextAccessor.HttpContext.Items["userId"];
+            var ret = await _surveyService.GetAllSurveys(page, userId);
             return ret;
         }
 
         /// <summary>
-        /// Creates new survey
+        ///  Creates new survey
         /// </summary>
-        /// <param name="credentials"></param>
+        /// <param name="newSurvey"></param>
         /// <returns></returns>
         [HttpPost("create")]
         [ProducesResponseType(200)]
