@@ -180,9 +180,20 @@ namespace NeoAnalytica.Infrastructure
 
         }
 
-        public override Task<int> InsertAsync(SurveyEntity entity)
+        public override async Task<int> InsertAsync(SurveyEntity entity)
         {
-            throw new NotImplementedException();
+            using (var conn = base.DbConnection)
+            {
+                var sql = "INSERT INTO Survey(Name, Description, UserID, SurveyCategoryID)" + "VALUES(@Name, @Description, @UserID, @SurveyCategoryID); SELECT CAST(SCOPE_IDENTITY() as int)";
+                var parameters = new DynamicParameters();
+                parameters.Add("@Name", entity.Name, System.Data.DbType.String);
+                parameters.Add("@Description", entity.Description, System.Data.DbType.String);
+                parameters.Add("@UserID", entity.UserId, System.Data.DbType.Int32);
+                parameters.Add("@SurveyCategoryID", entity.SurveyCategoryId, System.Data.DbType.Int32);
+
+                var id = await conn.ExecuteScalarAsync<int>(sql, parameters);
+                return id;
+            }
         }
 
     }
