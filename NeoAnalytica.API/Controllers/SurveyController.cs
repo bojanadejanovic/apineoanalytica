@@ -61,6 +61,7 @@ namespace NeoAnalytica.API.Controllers
         /// </summary>
         /// <param name="newSurvey"></param>
         /// <returns></returns>
+        [ServiceFilter(typeof(CheckToken))]
         [HttpPost("create")]
         [ProducesResponseType(200)]
         public async Task<IActionResult> CreateNewSurvey([FromBody] SurveyRequest newSurvey)
@@ -70,15 +71,10 @@ namespace NeoAnalytica.API.Controllers
             {
                 return BadRequest("Suvey name cannot be empty!");
             }
-            var author = await _authService.GetUserAsync(newSurvey.Username);
-            if (author == null)
-            {
-                return BadRequest("User not found!");
-            }
-
-            SurveyEntity entity = new SurveyEntity() { Name = newSurvey.SurveyName, Description = newSurvey.SurveyDescription, SurveyCategoryId = newSurvey.SurveyCategoryID, UserId = author.UserId };
-            var result = await _surveyService.CreateNewSurvey(entity);
-            return new JsonResult(result);
+            var userId = (int)_httpContextAccessor.HttpContext.Items["userId"];
+            SurveyEntity entity = new SurveyEntity() { Name = newSurvey.SurveyName, Description = newSurvey.SurveyDescription, SurveyCategoryId = newSurvey.SurveyCategoryID, UserId = userId };
+            var result = await _surveyService.InsertSurveyAsync(entity);
+            return CreatedAtAction("GetSurvey", new { surveyId = result.SurveyId }, result);
         }
 
         /// <summary>
@@ -86,7 +82,7 @@ namespace NeoAnalytica.API.Controllers
         /// </summary>
         /// <param name="surveyId"></param>
         /// <returns></returns>
-        [HttpGet("[action]/{surveyId}")]
+        [HttpGet("{surveyId}")]
         public async Task<IActionResult> GetSurvey(int surveyId)
         {
             var survey = await _surveyService.GetSurveyById(surveyId);

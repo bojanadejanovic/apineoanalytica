@@ -29,7 +29,7 @@ namespace NeoAnalytica.Infrastructure
         {
             _logger = logger;
         }
-       
+
         public override async Task DeleteAsync(int Id)
         {
             using (var conn = base.DbConnection)
@@ -60,7 +60,7 @@ namespace NeoAnalytica.Infrastructure
                 return await conn.QueryAsync<SurveyEntity>(sql);
             }
         }
-        
+
         public async Task<IEnumerable<SurveyEntity>> GetAllSurveys(Pager pager, int UserId)
         {
             using (var conn = base.DbConnection)
@@ -68,7 +68,7 @@ namespace NeoAnalytica.Infrastructure
                 pager.OrderBy = string.IsNullOrEmpty(pager.OrderBy) ? "SurveyID" : pager.OrderBy;
                 string where = $"where UserID = {UserId}";
                 var sql = ($"select * from [dbo].[Survey] {where} order by {pager.OrderBy} OFFSET {pager.Offset} ROWS FETCH NEXT {pager.Next} ROWS ONLY");
-                var results =  await conn.QueryAsync<SurveyEntity>(sql);
+                var results = await conn.QueryAsync<SurveyEntity>(sql);
                 return results;
             }
         }
@@ -82,11 +82,11 @@ namespace NeoAnalytica.Infrastructure
             }
         }
 
-        public override async Task<int> InsertAsync(SurveyEntity entity)
+        public async Task<SurveyEntity> InsertSurveyAsync(SurveyEntity entity)
         {
             using (var conn = base.DbConnection)
             {
-                var sql = "INSERT INTO Survey(Name, Description, UserID, SurveyCategoryID)" + "VALUES(@Name, @Description, @UserID, @SurveyCategoryID); SELECT CAST(SCOPE_IDENTITY() as int)";
+                var sql = "INSERT INTO dbo.Survey(Name, Description, UserID, SurveyCategoryID)" + "VALUES(@Name, @Description, @UserID, @SurveyCategoryID); SELECT CAST(SCOPE_IDENTITY() as int)";
                 var parameters = new DynamicParameters();
                 parameters.Add("@Name", entity.Name, System.Data.DbType.String);
                 parameters.Add("@Description", entity.Description, System.Data.DbType.String);
@@ -94,7 +94,8 @@ namespace NeoAnalytica.Infrastructure
                 parameters.Add("@SurveyCategoryID", entity.SurveyCategoryId, System.Data.DbType.Int32);
 
                 var id = await conn.ExecuteScalarAsync<int>(sql, parameters);
-                return id;
+                entity.SurveyId = id;
+                return entity;
             }
         }
 
@@ -114,7 +115,7 @@ namespace NeoAnalytica.Infrastructure
                     parameters.Add("@Name", entityToUpdate.Name, DbType.String);
                 }
 
-                if(existingEntity.Description != entityToUpdate.Description)
+                if (existingEntity.Description != entityToUpdate.Description)
                 {
                     sql += "Description=@Description,";
                     parameters.Add("@Description", entityToUpdate.Description, DbType.String);
@@ -147,11 +148,6 @@ namespace NeoAnalytica.Infrastructure
             return await FindAsync(suveyId);
         }
 
-        public async Task<int> CreateNewSurvey(SurveyEntity survey)
-        {
-            return await InsertAsync(survey);
-        }
-
         public async Task UpdateSurvey(SurveyEntity survey)
         {
             await UpdateAsync(survey);
@@ -176,12 +172,19 @@ namespace NeoAnalytica.Infrastructure
                         await conn.QueryAsync("InsertQuestion", parameters, commandType: CommandType.StoredProcedure);
                     }
                 }
-            } catch (DatabaseException ex)
+            }
+            catch (DatabaseException ex)
             {
                 _logger.LogError($"Error ocurred while executing AddQuestionsToSurvey: { ex.Message }");
                 throw;
             }
 
         }
+
+        public override Task<int> InsertAsync(SurveyEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
