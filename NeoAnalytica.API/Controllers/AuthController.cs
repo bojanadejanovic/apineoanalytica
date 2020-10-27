@@ -43,7 +43,6 @@ namespace NeoAnalytica.API.Controllers
         /// <returns></returns>
         [HttpPost("register")]
         [ProducesResponseType(200)]
-        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] UserCredentials credentials)
         {
             //validate request 
