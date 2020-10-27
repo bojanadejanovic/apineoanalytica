@@ -65,9 +65,12 @@ namespace NeoAnalytica.Infrastructure
             using (var conn = base.DbConnection)
             {
                 pager.OrderBy = string.IsNullOrEmpty(pager.OrderBy) ? "SurveyID" : pager.OrderBy;
-                string where = $"where UserID = {UserId}";
-                var sql = ($"select * from [dbo].[Survey] {where} order by {pager.OrderBy} OFFSET {pager.Offset} ROWS FETCH NEXT {pager.Next} ROWS ONLY");
-                var results = await conn.QueryAsync<SurveyEntity>(sql);
+                var sql = ($"select * from [dbo].[Survey] where UserID = @UserID order by {pager.OrderBy} OFFSET @Offset ROWS FETCH NEXT @Next ROWS ONLY");
+                var parameters = new DynamicParameters();
+                parameters.Add("@UserID", UserId, DbType.Int32);
+                parameters.Add("@Offset", pager.Offset, DbType.Int32);
+                parameters.Add("@Next", pager.Next, DbType.Int32);
+                var results = await conn.QueryAsync<SurveyEntity>(sql, parameters);
                 return results;
             }
         }
