@@ -18,5 +18,6 @@ namespace NeoAnalytica.AppCore.Entities
         public int UserId { get; set; }
 
         public int? SurveyCategoryId { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
