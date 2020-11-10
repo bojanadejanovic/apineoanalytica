@@ -34,10 +34,10 @@ namespace NeoAnalytica.Infrastructure
         {
             using (var conn = base.DbConnection)
             {
-                var sql = "DELETE FROM ApplicationUser WHERE Id = @Id";
+                var sql = "UPDATE Survey SET IsDeleted=1 WHERE Id = @Id";
                 var parameters = new DynamicParameters();
                 parameters.Add("@Id", Id, System.Data.DbType.Int32);
-                await conn.QueryFirstOrDefaultAsync<ApplicationUser>(sql, parameters);
+                await conn.QueryFirstOrDefaultAsync<SurveyEntity>(sql, parameters);
             }
         }
 
@@ -65,9 +65,12 @@ namespace NeoAnalytica.Infrastructure
             using (var conn = base.DbConnection)
             {
                 pager.OrderBy = string.IsNullOrEmpty(pager.OrderBy) ? "SurveyID" : pager.OrderBy;
-                string where = $"where UserID = {UserId}";
-                var sql = ($"select * from [dbo].[Survey] {where} order by {pager.OrderBy} OFFSET {pager.Offset} ROWS FETCH NEXT {pager.Next} ROWS ONLY");
-                var results = await conn.QueryAsync<SurveyEntity>(sql);
+                var sql = ($"select * from [dbo].[Survey] where UserID = @UserID order by {pager.OrderBy} OFFSET @Offset ROWS FETCH NEXT @Next ROWS ONLY");
+                var parameters = new DynamicParameters();
+                parameters.Add("@UserID", UserId, DbType.Int32);
+                parameters.Add("@Offset", pager.Offset, DbType.Int32);
+                parameters.Add("@Next", pager.Next, DbType.Int32);
+                var results = await conn.QueryAsync<SurveyEntity>(sql, parameters);
                 return results;
             }
         }
@@ -152,33 +155,33 @@ namespace NeoAnalytica.Infrastructure
             await UpdateAsync(survey);
         }
 
-        public async Task AddQuestionsToSurvey(QuestionRequest questionRequest)
-        {
-            try
-            {
-                // execute sp
-                using (var conn = base.DbConnection)
-                {
+        //public async Task AddQuestionsToSurvey(QuestionRequest questionRequest)
+        //{
+        //    try
+        //    {
+        //        // execute sp
+        //        using (var conn = base.DbConnection)
+        //        {
 
-                    foreach (var question in questionRequest.Questions)
-                    {
-                        var parameters = new DynamicParameters();
-                        parameters.Add("@QuestionID", question.Id, System.Data.DbType.Int32);
-                        parameters.Add("@Description", question.Text, System.Data.DbType.String);
-                        parameters.Add("@QuestionТypeID", question.QuestionТypeID, System.Data.DbType.Int32);
-                        parameters.Add("@AnswerOptional", question.AnswerOptional, System.Data.DbType.Boolean);
-                        parameters.Add("@SurveyID", questionRequest.SurveyId, System.Data.DbType.Int32);
-                        await conn.QueryAsync("InsertQuestion", parameters, commandType: CommandType.StoredProcedure);
-                    }
-                }
-            }
-            catch (DatabaseException ex)
-            {
-                _logger.LogError($"Error ocurred while executing AddQuestionsToSurvey: { ex.Message }");
-                throw;
-            }
+        //            foreach (var question in questionRequest.Questions)
+        //            {
+        //                var parameters = new DynamicParameters();
+        //                parameters.Add("@QuestionID", question.Id, System.Data.DbType.Int32);
+        //                parameters.Add("@Description", question.Text, System.Data.DbType.String);
+        //                parameters.Add("@QuestionТypeID", question.QuestionТypeID, System.Data.DbType.Int32);
+        //                parameters.Add("@AnswerOptional", question.AnswerOptional, System.Data.DbType.Boolean);
+        //                parameters.Add("@SurveyID", questionRequest.SurveyId, System.Data.DbType.Int32);
+        //                await conn.QueryAsync("InsertQuestion", parameters, commandType: CommandType.StoredProcedure);
+        //            }
+        //        }
+        //    }
+        //    catch (DatabaseException ex)
+        //    {
+        //        _logger.LogError($"Error ocurred while executing AddQuestionsToSurvey: { ex.Message }");
+        //        throw;
+        //    }
 
-        }
+        //}
 
         public override async Task<int> InsertAsync(SurveyEntity entity)
         {

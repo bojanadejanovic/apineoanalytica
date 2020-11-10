@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -125,7 +126,11 @@ namespace NeoAnalytica.API
             //});
 
             services.AddScoped<CheckToken>();
-            services.AddControllers();
+            services.AddControllers()
+            .AddFluentValidation(s =>
+            {
+                s.RegisterValidatorsFromAssemblyContaining<Startup>();
+            });
 
             // Configure Swagger
             services.AddSwaggerGen(genOptions =>

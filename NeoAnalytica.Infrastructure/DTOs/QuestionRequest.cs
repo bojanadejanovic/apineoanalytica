@@ -7,8 +7,10 @@ namespace NeoAnalytica.Infrastructure.DTOs
 {
     public class QuestionRequest
     {
-        public int SurveyId { get; set; }
+        public string Text { get; set; }
 
-        public List<QuestionEntity> Questions { get; set; }
+        public int QuestionТypeID { get; set; }
+
+        public bool AnswerOptional { get; set; }
     }
 }

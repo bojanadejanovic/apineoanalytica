@@ -22,9 +22,8 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "SENDGRID_API_KEY": "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",
         "EmailConfiguration__Username": "apikey",
-        "EmailConfiguration__Password": "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"
+        "EmailConfiguration__Password": "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"
       },
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
     },
