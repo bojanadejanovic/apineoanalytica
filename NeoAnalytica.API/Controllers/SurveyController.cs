@@ -99,7 +99,7 @@ namespace NeoAnalytica.API.Controllers
         /// </summary>
         /// <param name="surveyId"></param>
         /// <returns></returns>
-        [HttpDelete]
+        [HttpDelete("{surveyId}")]
         public async Task<ActionResult> DeleteSurvey(int surveyId)
         {
             var survey = await _surveyService.GetSurveyById(surveyId);
