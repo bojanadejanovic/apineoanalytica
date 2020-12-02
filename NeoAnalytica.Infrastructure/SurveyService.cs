@@ -129,6 +129,15 @@ namespace NeoAnalytica.Infrastructure
             return await FindAsync(suveyId);
         }
 
+        public async Task<SurveyEntity> GetSurveyByIdAndUserId(int surveyId, int userId)
+        {
+            var sql = "SELECT * FROM Survey WHERE SurveyID = @Id AND UserID= @UserId";
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id", surveyId, System.Data.DbType.Int32);
+            parameters.Add("@UserId", userId, System.Data.DbType.Int32);
+            return await base.DbConnection.QueryFirstOrDefaultAsync<SurveyEntity>(sql, parameters);
+        }
+
         public async Task UpdateSurvey(SurveyEntity survey)
         {
             await UpdateAsync(survey);
@@ -147,5 +156,7 @@ namespace NeoAnalytica.Infrastructure
             return id;
 
         }
+
+       
     }
 }

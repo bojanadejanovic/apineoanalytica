@@ -16,6 +16,7 @@ using NeoAnalytica.AppCore.Entities;
 using NeoAnalytica.AppCore.Models;
 using NeoAnalytica.Infrastructure;
 using NeoAnalytica.Infrastructure.DTOs;
+using NeoAnalytica.Infrastructure.Interfaces;
 
 namespace NeoAnalytica.API.Controllers
 {
@@ -28,15 +29,19 @@ namespace NeoAnalytica.API.Controllers
         private ISurveyService _surveyService;
         private IAuthService _authService;
         private IHttpContextAccessor _httpContextAccessor;
+        private IQuestionService _questionService;
+
 
         public SurveyController(
             ISurveyService surveyService,
             IAuthService authService,
+            IQuestionService questionService,
             IHttpContextAccessor httpContextAccessor)
         {
             _surveyService = surveyService;
             _authService = authService;
             _httpContextAccessor = httpContextAccessor;
+            _questionService = questionService;
         }
 
         /// <summary>
@@ -123,6 +128,40 @@ namespace NeoAnalytica.API.Controllers
             if (categories.Any())
             {
                 return Ok(categories);
+            }
+
+            return NoContent();
+        }
+
+        [ServiceFilter(typeof(CheckToken))]
+        [HttpPost("{surveyId}/questions")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> AddQuestion([FromBody] QuestionRequest newQuestionRequest, int surveyId)
+        {
+            var userId = (int)_httpContextAccessor.HttpContext.Items["userId"];
+            var survey = _surveyService.GetSurveyByIdAndUserId(userId, surveyId);
+            if (survey == null)
+            {
+                return BadRequest($"Survey with ID : {newQuestionRequest.SurveyID} does not exist.");
+            }
+            var newQuestion = new QuestionEntity()
+            {
+                Text = newQuestionRequest.Text,
+                SurveyID = newQuestionRequest.SurveyID,
+                AnswerOptional = newQuestionRequest.AnswerOptional,
+                QuestionТypeID = newQuestionRequest.QuestionТypeID
+            };
+            var result = await _questionService.InsertQuestionAsync(newQuestion);
+            return CreatedAtAction("GetQuestion", new { questionId = result.Id }, result);
+        }
+
+        [HttpGet("question/{questionId}")]
+        public async Task<IActionResult> GetQuestion(int questionId)
+        {
+            var question = await _questionService.GetQuestionById(questionId);
+            if (question != null)
+            {
+                return Ok(question);
             }
 
             return NoContent();

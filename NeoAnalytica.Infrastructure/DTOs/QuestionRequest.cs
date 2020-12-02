@@ -12,5 +12,7 @@ namespace NeoAnalytica.Infrastructure.DTOs
         public int QuestionТypeID { get; set; }
 
         public bool AnswerOptional { get; set; }
+
+        public int SurveyID { get; set; }
     }
 }
