@@ -9,12 +9,12 @@ namespace NeoAnalytica.Infrastructure.DTOs
     {
         public SurveyRequest()
         {
-            Questions = new List<QuestionRequest>();
+            //Questions = new List<QuestionRequest>();
         }
         public string SurveyName { get; set; }
         public string SurveyDescription { get; set; }
         public int SurveyCategoryID { get; set; }
 
-        public List<QuestionRequest> Questions { get; set; }
+        //public List<QuestionRequest> Questions { get; set; }
     }
 }

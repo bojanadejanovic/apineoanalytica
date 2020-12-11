@@ -86,6 +86,7 @@ namespace NeoAnalytica.API
             // Register your regular repositories
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ISurveyService, SurveyService>();
+            services.AddScoped<IQuestionService, QuestionService>();
 
             // auth/token configuration
             services.Configure<TokenManagement>(Configuration.GetSection("tokenManagement"));

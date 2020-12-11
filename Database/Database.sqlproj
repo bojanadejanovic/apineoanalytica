@@ -64,6 +64,7 @@
     <Folder Include="Tables" />
     <Folder Include="Scripts" />
     <Folder Include="StoredProcedures" />
+    <Folder Include="Types" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ApplicationUser.sql" />
@@ -72,19 +73,21 @@
     <Build Include="Tables\Answer.sql" />
     <Build Include="Tables\Question.sql" />
     <Build Include="Tables\QuestionType.sql" />
-    <Build Include="Tables\QuestionOption.sql" />
+    <Build Include="Tables\AnswerResult.sql" />
     <Build Include="Tables\Survey.sql" />
     <Build Include="Tables\SurveyParticipant.sql" />
     <Build Include="Tables\SurveyCategory.sql" />
     <Build Include="StoredProcedures\GetAndUpdateUser.sql" />
     <Build Include="Tables\AspNetUserLogins.sql" />
+    <Build Include="StoredProcedures\AddQuestionToSurvey.sql" />
+    <Build Include="Types\StringListType.sql" />
+    <Build Include="Types\IdTitleListType.sql" />
+    <Build Include="StoredProcedures\UpdateQuestion.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scripts\NeoAnalytica.PostDeployment.sql" />
-    <PostDeploy Include="Script.PostDeployment.sql" />
+    <PostDeploy Include="Scripts\Script.PostDeployment.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scripts\NeoAnalytica.PreDeployment.sql" />
-    <PreDeploy Include="Script.PreDeployment.sql" />
+    <PreDeploy Include="Scripts\Script.PreDeployment.sql" />
   </ItemGroup>
 </Project>

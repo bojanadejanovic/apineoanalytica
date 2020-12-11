@@ -1,9 +1,7 @@
 ﻿CREATE TABLE [dbo].[Answer](
 	[AnswerID] [int] IDENTITY(1,1) NOT NULL,
 	[QuestionID] [int] NOT NULL,
-	[SelectedOptionID] [int] NULL,
-	[SurveyParticipantID] [int] NULL,
-	[DateAnswered] [datetime] NULL,
+	[AnswerText] [nvarchar](max) NULL
  CONSTRAINT [PK_Answer_AnswerID] PRIMARY KEY CLUSTERED 
 (
 	[AnswerID] ASC
@@ -16,18 +14,4 @@ REFERENCES [dbo].[Question] ([QuestionID])
 GO
 
 ALTER TABLE [dbo].[Answer] CHECK CONSTRAINT [FK_Answer_Question_QuestionID]
-GO
-
-ALTER TABLE [dbo].[Answer]  WITH CHECK ADD  CONSTRAINT [FK_Answer_QuestionOption_QuestionOptionID] FOREIGN KEY([SelectedOptionID])
-REFERENCES [dbo].[QuestionOption] ([QuestionOptionID])
-GO
-
-ALTER TABLE [dbo].[Answer] CHECK CONSTRAINT [FK_Answer_QuestionOption_QuestionOptionID]
-GO
-
-ALTER TABLE [dbo].[Answer]  WITH CHECK ADD  CONSTRAINT [FK_Answer_SurveyParticipant_SurveyParticipantID] FOREIGN KEY([SurveyParticipantID])
-REFERENCES [dbo].[SurveyParticipant] ([SurveyParticipantID])
-GO
-
-ALTER TABLE [dbo].[Answer] CHECK CONSTRAINT [FK_Answer_SurveyParticipant_SurveyParticipantID]
 GO

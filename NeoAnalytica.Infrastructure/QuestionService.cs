@@ -5,6 +5,8 @@ using NeoAnalytica.Application;
 using NeoAnalytica.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,12 +53,12 @@ namespace NeoAnalytica.Infrastructure
 
         public override async Task<int> InsertAsync(QuestionEntity entity)
         {
-            var sql = "INSERT INTO dbo.Question(QuestionID, QuestionТypeID, QuestionText, AnswerOptional, SurveyID)" +
-                "VALUES(@QuestionID, @QuestionТypeID, @QuestionText, @AnswerOptional, @SurveyID); SELECT CAST(SCOPE_IDENTITY() as int)";
+            var sql = "INSERT INTO dbo.Question(QuestionID, QuestionTypeID, QuestionText, AnswerOptional, SurveyID)" +
+                "VALUES(@QuestionID, @QuestionTypeID, @QuestionText, @AnswerOptional, @SurveyID); SELECT CAST(SCOPE_IDENTITY() as int)";
 
             var parameters = new DynamicParameters();
             parameters.Add("@QuestionID", entity.Id, System.Data.DbType.Int32);
-            parameters.Add("@QuestionТypeID", entity.QuestionТypeID, System.Data.DbType.Int32);
+            parameters.Add("@QuestionTypeID", entity.QuestionTypeID, System.Data.DbType.Int32);
             parameters.Add("@QuestionText", entity.Text, System.Data.DbType.String);
             parameters.Add("@AnswerOptional", entity.AnswerOptional, System.Data.DbType.Boolean);
             parameters.Add("@SurveyID", entity.SurveyID, System.Data.DbType.Int32);
@@ -65,26 +67,70 @@ namespace NeoAnalytica.Infrastructure
             return id;
         }
 
-        public async Task<QuestionEntity> InsertQuestionAsync(QuestionEntity entity)
+        public async Task<int> InsertQuestionAsync(QuestionEntity entity)
         {
-            var sql = "INSERT INTO dbo.Question(QuestionID, QuestionТypeID, QuestionText, AnswerOptional, SurveyID)" +
-               "VALUES(@QuestionID, @QuestionТypeID, @QuestionText, @AnswerOptional, @SurveyID); SELECT CAST(SCOPE_IDENTITY() as int)";
+            int questionId = 0;
+            using (var conn = base.DbConnection)
+            {
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@QuestionID", entity.Id, System.Data.DbType.Int32);
-            parameters.Add("@QuestionТypeID", entity.QuestionТypeID, System.Data.DbType.Int32);
-            parameters.Add("@QuestionText", entity.Text, System.Data.DbType.String);
-            parameters.Add("@AnswerOptional", entity.AnswerOptional, System.Data.DbType.Boolean);
-            parameters.Add("@SurveyID", entity.SurveyID, System.Data.DbType.Int32);
 
-            var id = await base.DbConnection.ExecuteScalarAsync<int>(sql, parameters);
-            entity.Id = id;
-            return entity;
+                DataTable tvp = new DataTable("Answers");
+                tvp.Columns.Add(new DataColumn("Item", typeof(string)));
+
+                foreach(var answer in entity.Answers)
+                {
+                    tvp.Rows.Add(answer.AnswerText);
+                }
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@Answers", tvp.AsTableValuedParameter("dbo.StringList"));
+                parameters.Add("@Text", entity.Text, DbType.String);
+                parameters.Add("@SurveyID", entity.SurveyID, DbType.Int32);
+                parameters.Add("@AnswerOptional", entity.AnswerOptional, DbType.Boolean);
+                parameters.Add("@QuestionTypeID", entity.QuestionTypeID, DbType.Int32);
+                parameters.Add("@QuestionID", entity.Id, DbType.Int32, ParameterDirection.Output);
+               
+
+                await conn.QueryAsync<int>(
+                    "dbo.AddQuestionsToSurvey",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+                questionId = parameters.Get<int>("@QuestionID");
+            }
+
+            return questionId;
         }
 
-        public override Task UpdateAsync(QuestionEntity entityToUpdate)
+        public override async Task UpdateAsync(QuestionEntity entityToUpdate)
         {
-            throw new NotImplementedException();
+            using (var conn = base.DbConnection)
+            {
+
+
+                DataTable tvp = new DataTable("Answers");
+                tvp.Columns.Add(new DataColumn("ID", typeof(int)));
+                tvp.Columns.Add(new DataColumn("Title", typeof(string)));
+
+                foreach (var answer in entityToUpdate.Answers)
+                {
+                    tvp.Rows.Add(answer.Id, answer.AnswerText);
+                }
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@QuestionID", entityToUpdate.Id, DbType.Int32);
+                parameters.Add("@Text", entityToUpdate.Text, DbType.String);
+                parameters.Add("@AnswerOptional", entityToUpdate.AnswerOptional, DbType.Boolean);
+                parameters.Add("@AnswersToUpdate", tvp.AsTableValuedParameter("dbo.IdTitleListType"));
+
+
+
+                await conn.QueryAsync(
+                    "dbo.UpdateQuestion",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+            }
         }
+
+
     }
 }

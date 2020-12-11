@@ -54,7 +54,7 @@ namespace NeoAnalytica.Infrastructure
         public async Task<IEnumerable<SurveyEntity>> GetAllSurveys(Pager pager, int UserId)
         {
             pager.OrderBy = string.IsNullOrEmpty(pager.OrderBy) ? "SurveyID" : pager.OrderBy;
-            var sql = ($"select * from [dbo].[Survey] where UserID = @UserID order by {pager.OrderBy} OFFSET @Offset ROWS FETCH NEXT @Next ROWS ONLY");
+            var sql = ($"select * from [dbo].[Survey] where UserID = @UserID AND IsDeleted = 0 order by {pager.OrderBy} OFFSET @Offset ROWS FETCH NEXT @Next ROWS ONLY");
             var parameters = new DynamicParameters();
             parameters.Add("@UserID", UserId, DbType.Int32);
             parameters.Add("@Offset", pager.Offset, DbType.Int32);
@@ -131,7 +131,7 @@ namespace NeoAnalytica.Infrastructure
 
         public async Task<SurveyEntity> GetSurveyByIdAndUserId(int surveyId, int userId)
         {
-            var sql = "SELECT * FROM Survey WHERE SurveyID = @Id AND UserID= @UserId";
+            var sql = "SELECT * FROM Survey WHERE SurveyID = @Id AND UserID= @UserId AND IsDeleted = 0";
             var parameters = new DynamicParameters();
             parameters.Add("@Id", surveyId, System.Data.DbType.Int32);
             parameters.Add("@UserId", userId, System.Data.DbType.Int32);

@@ -14,5 +14,13 @@ namespace NeoAnalytica.Infrastructure.DTOs
         public bool AnswerOptional { get; set; }
 
         public int SurveyID { get; set; }
+
+        public List<QuestionItem> PossibleAnswers { get; set; }
+    }
+
+    public class QuestionItem
+    {
+        public int? ID { get; set; }
+        public string Text { get; set; }
     }
 }

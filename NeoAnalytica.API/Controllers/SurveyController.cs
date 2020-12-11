@@ -139,7 +139,7 @@ namespace NeoAnalytica.API.Controllers
         public async Task<IActionResult> AddQuestion([FromBody] QuestionRequest newQuestionRequest, int surveyId)
         {
             var userId = (int)_httpContextAccessor.HttpContext.Items["userId"];
-            var survey = _surveyService.GetSurveyByIdAndUserId(userId, surveyId);
+            var survey = await _surveyService.GetSurveyByIdAndUserId(surveyId, userId);
             if (survey == null)
             {
                 return BadRequest($"Survey with ID : {newQuestionRequest.SurveyID} does not exist.");
@@ -149,11 +149,14 @@ namespace NeoAnalytica.API.Controllers
                 Text = newQuestionRequest.Text,
                 SurveyID = newQuestionRequest.SurveyID,
                 AnswerOptional = newQuestionRequest.AnswerOptional,
-                QuestionТypeID = newQuestionRequest.QuestionТypeID
+                QuestionTypeID = newQuestionRequest.QuestionТypeID,
+                Answers = MapAnswers(newQuestionRequest.PossibleAnswers)
             };
             var result = await _questionService.InsertQuestionAsync(newQuestion);
-            return CreatedAtAction("GetQuestion", new { questionId = result.Id }, result);
+            return CreatedAtAction("GetQuestion", new { questionId = result }, result);
         }
+
+       
 
         [HttpGet("question/{questionId}")]
         public async Task<IActionResult> GetQuestion(int questionId)
@@ -166,5 +169,41 @@ namespace NeoAnalytica.API.Controllers
 
             return NoContent();
         }
+
+        [ServiceFilter(typeof(CheckToken))]
+        [HttpPut("{surveyId}/questions")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> UpdateQuestion([FromBody] QuestionRequest updateQuestionRequest, int surveyId)
+        {
+            var userId = (int)_httpContextAccessor.HttpContext.Items["userId"];
+            var survey = await _surveyService.GetSurveyByIdAndUserId(surveyId, userId);
+            if (survey == null)
+            {
+                return BadRequest($"Survey with ID : {updateQuestionRequest.SurveyID} does not exist.");
+            }
+            var updateQuestion = new QuestionEntity()
+            {
+                Text = updateQuestionRequest.Text,
+                AnswerOptional = updateQuestionRequest.AnswerOptional,
+                QuestionTypeID = updateQuestionRequest.QuestionТypeID,
+                Answers = MapAnswers(updateQuestionRequest.PossibleAnswers)
+            };
+            await _questionService.UpdateAsync(updateQuestion);
+            return Ok();
+        }
+
+
+
+        #region helpers
+        private List<AnswerEntity> MapAnswers(List<QuestionItem> possibleAnswers)
+        {
+            List<AnswerEntity> answerEntities = new List<AnswerEntity>();
+            foreach (var answer in possibleAnswers)
+            {
+                answerEntities.Add(new AnswerEntity() { AnswerText = answer.Text });
+            }
+            return answerEntities;
+        }
+        #endregion
     }
 }

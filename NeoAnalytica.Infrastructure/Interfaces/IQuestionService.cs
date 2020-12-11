@@ -1,4 +1,5 @@
 ﻿using NeoAnalytica.AppCore.Entities;
+using NeoAnalytica.Application;
 using NeoAnalytica.Infrastructure.DTOs;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace NeoAnalytica.Infrastructure.Interfaces
 {
-    public interface IQuestionService
+    public interface IQuestionService : IGenericRepository<QuestionEntity>
     {
-        Task<QuestionEntity> InsertQuestionAsync(QuestionEntity entity);
+        Task<int> InsertQuestionAsync(QuestionEntity entity);
 
         Task<QuestionEntity> GetQuestionById(int questionId);
     }
