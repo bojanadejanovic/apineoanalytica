@@ -62,7 +62,7 @@ namespace NeoAnalytica.API.Controllers
         /// <param name="newSurvey"></param>
         /// <returns></returns>
         [ServiceFilter(typeof(CheckToken))]
-        [HttpPost("create")]
+        [HttpPost]
         [ProducesResponseType(200)]
         public async Task<IActionResult> CreateNewSurvey([FromBody] SurveyRequest newSurvey)
         {
@@ -95,6 +95,23 @@ namespace NeoAnalytica.API.Controllers
         }
 
         /// <summary>
+        /// Deletes survey based on supplied surveyId
+        /// </summary>
+        /// <param name="surveyId"></param>
+        /// <returns></returns>
+        [HttpDelete("{surveyId}")]
+        public async Task<ActionResult> DeleteSurvey(int surveyId)
+        {
+            var survey = await _surveyService.GetSurveyById(surveyId);
+            if (survey == null)
+            {
+                return NotFound();
+            }
+            await _surveyService.DeleteAsync(surveyId);
+            return NoContent();
+        }
+
+        /// <summary>
         /// Retrieves all survey categories
         /// </summary>
         /// <returns></returns>
@@ -110,22 +127,5 @@ namespace NeoAnalytica.API.Controllers
 
             return NoContent();
         }
-
-        [HttpPost("question/add")]
-        [ProducesResponseType(200)]
-        public async Task<IActionResult> AddQuestions([FromBody] QuestionRequest newQuestions)
-        {
-            // TODO: move this to validation
-            var survey = _surveyService.GetSurveyById(newQuestions.SurveyId);
-            if(survey == null)
-            {
-                return BadRequest("Survey not found!");
-            }
-
-            await _surveyService.AddQuestionsToSurvey(newQuestions);
-            return Ok();
-        }
-
-
     }
 }

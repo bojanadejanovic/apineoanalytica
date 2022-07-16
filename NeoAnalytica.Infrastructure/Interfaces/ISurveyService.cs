@@ -16,7 +16,7 @@ namespace NeoAnalytica.Infrastructure
         Task<SurveyEntity> InsertSurveyAsync(SurveyEntity entity);
         Task UpdateSurvey(SurveyEntity survey);
         Task<IEnumerable<SurveyCategoryEntity>> GetAllSurveyCategories();
-        Task AddQuestionsToSurvey(QuestionRequest questionRequest);
+        //Task AddQuestionsToSurvey(QuestionRequest questionRequest);
         Task<IEnumerable<SurveyEntity>> GetAllSurveys(Pager pager, int UserId);
     }
 }
