@@ -23,7 +23,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "EmailConfiguration__Username": "apikey",
-        "EmailConfiguration__Password": "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"
+        "EmailConfiguration__Password": ""
       },
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
     },
